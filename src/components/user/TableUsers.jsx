@@ -9,7 +9,6 @@ const TableUsers = ({ userData }) => {
   const { FaUserEdit } = icons;
 
   const showModal = (userStatus) => {
-    console.log('userStatus : -------------->', userStatus);
     setIsModalOpen(true);
   };
   const handleOk = () => {

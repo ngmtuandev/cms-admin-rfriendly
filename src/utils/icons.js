@@ -1,9 +1,10 @@
 import { AiOutlineMenu } from "react-icons/ai";
-import { FaUserEdit } from "react-icons/fa";
+import { FaUserEdit, FaEdit } from "react-icons/fa";
 
 const icons = {
     AiOutlineMenu,
-    FaUserEdit
+    FaUserEdit,
+    FaEdit
 };
 
 export default icons;
