@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
-import { AppstoreOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons';
-import { Menu } from 'antd';
-import { UserComponent, RoleComponent } from '..';
-import ListRooomComponent from '../room/ListRooomComponent';
-
+import React, { useState } from "react";
+import {
+  AppstoreOutlined,
+  MailOutlined,
+  SettingOutlined,
+} from "@ant-design/icons";
+import { Menu } from "antd";
+import { UserComponent, RoleComponent } from "..";
+import ListRooomComponent from "../room/ListRooomComponent";
 
 const { SubMenu } = Menu;
 
@@ -12,13 +15,13 @@ const MenuNav = ({ onSelectComponent }) => {
   const handleClick = (e) => {
     setSelectedKey(e.key);
     switch (e.key) {
-      case '1':
+      case "1":
         onSelectComponent(<UserComponent />);
         break;
-      case '2':
+      case "2":
         onSelectComponent(<RoleComponent />);
         break;
-      case '3':
+      case "3":
         onSelectComponent(<ListRooomComponent />);
         break;
       default:
@@ -27,18 +30,22 @@ const MenuNav = ({ onSelectComponent }) => {
   };
 
   return (
-    <Menu
-      onClick={handleClick}
-      selectedKeys={[selectedKey]}
-      mode="inline"
-    >
-      <SubMenu key="sub1" icon={<MailOutlined />} title="Navigation One">
-        <Menu.Item key="1">Option 1</Menu.Item>
-        <Menu.Item key="2">Option 2</Menu.Item>
+    <Menu onClick={handleClick} selectedKeys={[selectedKey]} mode="inline">
+      <SubMenu
+        key="sub1"
+        icon={<MailOutlined />}
+        title="Quản lý người trong hệ thống"
+      >
+        <Menu.Item key="1">Quản lý danh sách</Menu.Item>
+        <Menu.Item key="2">Quản lý quyền</Menu.Item>
       </SubMenu>
-      <SubMenu key="sub2" icon={<AppstoreOutlined />} title="Navigation Two">
-        <Menu.Item key="3">Option 5</Menu.Item>
-        <Menu.Item key="4">Option 6</Menu.Item>
+      <SubMenu
+        key="sub2"
+        icon={<AppstoreOutlined />}
+        title="Quản lý phòng trong hệ thống"
+      >
+        <Menu.Item key="3">Danh sách phòng & tạo phòng</Menu.Item>
+        <Menu.Item key="4">Quán lý khuyến mãi</Menu.Item>
         <SubMenu key="sub3" title="Submenu">
           <Menu.Item key="5">Option 7</Menu.Item>
           <Menu.Item key="6">Option 8</Menu.Item>

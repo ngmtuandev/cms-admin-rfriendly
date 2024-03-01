@@ -1,5 +1,7 @@
 import userReducer from "./userSlice";
+import roomReducer from "./roomSlice";
 
 export default {
-    user: userReducer
+    user: userReducer,
+    room: roomReducer
 }

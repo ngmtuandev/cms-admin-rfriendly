@@ -1,3 +1,30 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:where(.css-dev-only-do-not-override-1rqnfsa).ant-steps
+  .ant-steps-item-process
+  .ant-steps-item-icon {
+  background-color: #ffb40c;
+  border-color: #ffb40c;
+}
+
+:where(.css-dev-only-do-not-override-1rqnfsa).ant-steps
+  .ant-steps-item-finish
+  .ant-steps-item-icon {
+  background-color: #ffb40c;
+  border-color: #ffb40c;
+}
+
+:where(.css-dev-only-do-not-override-1rqnfsa).ant-pagination
+  .ant-pagination-item-active
+  a {
+  color: #ffb40c;
+}
+
+:where(.css-dev-only-do-not-override-1rqnfsa).ant-pagination
+  .ant-pagination-item-active {
+  font-weight: 600;
+  background-color: #ffffff;
+  border-color: #ffb40c;
+}

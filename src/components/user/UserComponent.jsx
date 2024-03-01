@@ -92,7 +92,7 @@ const UserComponent = () => {
   return (
     <div className="px-main">
       <Modal
-        title="Title"
+        title="Thêm đối tác RFriendly"
         open={open}
         onOk={handleOk}
         confirmLoading={confirmLoading}
@@ -105,7 +105,6 @@ const UserComponent = () => {
             name="userName"
             onChange={handleChangeInput}
             placeholder="Enter your username"
-            prefix={<UserOutlined className="site-form-item-icon" />}
             suffix={
               <Tooltip title="Extra information">
                 <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />

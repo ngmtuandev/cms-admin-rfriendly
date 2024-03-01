@@ -1,19 +1,35 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Table, Select, message, Modal, Input } from "antd";
 import { useUpdateStatusRoom } from "../../hooks/room/useUpdateStatusRoom";
+import { useUpdateRoom } from "../../hooks/room/useUpdateRoom";
 import icons from "../../utils/icons";
 import { useGetListFacilities } from "../../hooks/facilities/useGetListFacilities";
+import { useGetListCoupons } from "../../hooks/coupon/useGetListCoupon";
+import formatDate from "../../helper/formatDate";
+import { StatusRoomConstant } from "../../constants/StatusRoomConstant";
 
 const TableListRoom = ({ listRoomData }) => {
   const { mutate: $updateStatusRoom } = useUpdateStatusRoom();
+  const { mutate: $updateRoom } = useUpdateRoom();
   const { facilities, isLoading: isLoadingFacilities } = useGetListFacilities();
+  const { coupons, isLoading: isLoadingCoupons } = useGetListCoupons();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const nameFacilityOptions =
     facilities &&
     facilities?.map((item) => ({
-      value: item?.nameFacility,
+      value: item?.id,
       label: item?.nameFacility,
     }));
+
+  const optionCoupon =
+    coupons &&
+    coupons?.map((item) => ({
+      value: item?.id,
+      label: `${formatDate(item?.dayStart)} - ${formatDate(item?.dayEnd)} (${
+        item?.percentCoupon
+      }%)`,
+    }));
+
   const [dataRoomEdit, setDataRoomEdit] = useState({
     price: 0,
     numberPerson: 0,
@@ -23,13 +39,18 @@ const TableListRoom = ({ listRoomData }) => {
     location: "",
     district: "",
     leaseTerm: 0,
-    convenientNearArea: null,
-    imageRooms: null,
     facilities: null,
     coupon: null,
     typeRoom: "",
     statusRoom: "",
+    id: "",
+    imageRooms: null,
+    convenientNearArea: {
+      distance: 0,
+      name: "",
+    },
   });
+
   const { FaEdit } = icons;
   const { TextArea } = Input;
 
@@ -47,6 +68,32 @@ const TableListRoom = ({ listRoomData }) => {
     );
   };
 
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    if (name.startsWith("convenientNearArea")) {
+      const fieldName = name.split(".")[1];
+      setDataRoomEdit((prevData) => ({
+        ...prevData,
+        convenientNearArea: {
+          ...prevData.convenientNearArea,
+          [fieldName]: value,
+        },
+      }));
+    } else {
+      setDataRoomEdit((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
+  };
+
+  const handleSelectChange = (value, name) => {
+    setDataRoomEdit((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
   const handleEditRoom = (data) => {
     setDataRoomEdit({
       price: data.price,
@@ -60,12 +107,29 @@ const TableListRoom = ({ listRoomData }) => {
       facilities:
         data?.facilities &&
         data?.facilities?.map((item) => ({
-          value: item?.nameFacility,
+          value: item?.id,
           label: item?.nameFacility,
         })),
+      coupon: data?.coupon && {
+        value: data?.coupon?.id,
+        label: `${formatDate(data?.coupon?.dayStart)} - ${formatDate(
+          data?.coupon?.dayEnd
+        )} (${data?.coupon?.percentCoupon}%)`,
+      },
+      typeRoom: {
+        value: data?.typeRoom?.id,
+        label: data?.typeRoom?.name,
+      },
+      statusRoom: {
+        value: data?.statusRoom,
+        label: data?.statusRoom,
+      },
+      id: data?.id,
+      convenientNearArea: {
+        name: data?.convenientNearArea?.name,
+        distance: data?.convenientNearArea?.distance,
+      },
     });
-
-    console.log("facilities : ", dataRoomEdit.facilities);
 
     showModal();
   };
@@ -148,6 +212,26 @@ const TableListRoom = ({ listRoomData }) => {
   };
 
   const handleOk = () => {
+    $updateRoom(
+      {
+        id: dataRoomEdit?.id,
+        value: {
+          ...dataRoomEdit,
+          statusRoom: dataRoomEdit?.statusRoom?.value,
+          typeRoom: dataRoomEdit.typeRoom.value,
+          facilities: dataRoomEdit?.facilities?.map((item) => item?.value),
+          coupon: dataRoomEdit?.coupon?.value,
+        },
+      },
+      {
+        onSuccess: () => {
+          message.success("Update room successfully !");
+        },
+        onError: () => {
+          message.error("Update room failure !");
+        },
+      }
+    );
     setIsModalOpen(false);
   };
 
@@ -155,14 +239,10 @@ const TableListRoom = ({ listRoomData }) => {
     setIsModalOpen(false);
   };
 
-  const handleChangeFacilities = (value) => {
-    console.log("handleChangeFacilities : ", value);
-  };
-
   return (
     <div className="">
       <Modal
-        title="Title"
+        title={`Update Room ${dataRoomEdit?.title}`}
         open={isModalOpen}
         onOk={handleOk}
         okButtonProps={{ style: { background: "#FFB40C" } }}
@@ -175,16 +255,19 @@ const TableListRoom = ({ listRoomData }) => {
               value={dataRoomEdit.title}
               name="title"
               placeholder="title"
+              onChange={handleInputChange}
             />
             <Input
               value={dataRoomEdit.price}
               name="price"
               placeholder="price"
+              onChange={handleInputChange}
             />
             <Input
               value={dataRoomEdit.numberPerson}
               name="numberPerson"
               placeholder="numberPerson"
+              onChange={handleInputChange}
             />
           </div>
           <div className="flex gap-4">
@@ -192,16 +275,19 @@ const TableListRoom = ({ listRoomData }) => {
               value={dataRoomEdit.stakeMoney}
               name="stakeMoney"
               placeholder="stakeMoney"
+              onChange={handleInputChange}
             />
             <Input
               value={dataRoomEdit.district}
               name="district"
               placeholder="district"
+              onChange={handleInputChange}
             />
             <Input
               value={dataRoomEdit.leaseTerm}
               name="leaseTerm"
               placeholder="leaseTerm"
+              onChange={handleInputChange}
             />
           </div>
           <div className="flex gap-4">
@@ -213,37 +299,73 @@ const TableListRoom = ({ listRoomData }) => {
               }}
               placeholder="Please select"
               defaultValue={dataRoomEdit.facilities}
-              onChange={handleChangeFacilities}
+              onChange={(value) => handleSelectChange(value, "facilities")}
               options={nameFacilityOptions && nameFacilityOptions}
             />
-            <Input
-              value={dataRoomEdit.coupon}
-              name="coupon"
-              placeholder="coupon"
+            <Select
+              allowClear
+              style={{
+                width: "100%",
+              }}
+              placeholder="Please select"
+              defaultValue={dataRoomEdit.coupon}
+              onChange={(value) => handleSelectChange(value, "coupon")}
+              options={optionCoupon && optionCoupon}
             />
           </div>
           <div className="flex gap-4">
-            <Input
-              value={dataRoomEdit.typeRoom}
-              name="typeRoom"
-              placeholder="typeRoom"
+            <Select
+              mode="tags"
+              allowClear
+              style={{
+                width: "100%",
+              }}
+              placeholder="Please select"
+              defaultValue={dataRoomEdit.typeRoom}
+              disabled={true}
             />
-            <Input
-              value={dataRoomEdit.statusRoom}
-              name="statusRoom"
-              placeholder="statusRoom"
+            <Select
+              allowClear
+              style={{
+                width: "100%",
+              }}
+              placeholder="Please select"
+              disabled={true}
+              defaultValue={dataRoomEdit.statusRoom}
+              onChange={(value) => handleSelectChange(value, "statusRoom")}
+              options={StatusRoomConstant && StatusRoomConstant}
             />
           </div>
           <Input
             value={dataRoomEdit.location}
             name="location"
             placeholder="location"
+            onChange={handleInputChange}
           />
+          <div className="flex gap-4">
+            <div className="w-[70%]">
+              <Input
+                value={dataRoomEdit?.convenientNearArea?.name}
+                name="convenientNearArea.name"
+                placeholder="Name convenientNearArea"
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="w-[30%]">
+              <Input
+                value={dataRoomEdit?.convenientNearArea?.distance}
+                name="convenientNearArea.distance"
+                placeholder="distance"
+                onChange={handleInputChange}
+              />
+            </div>
+          </div>
           <TextArea
             value={dataRoomEdit.description}
             name="description"
             placeholder="description"
             autoSize={{ minRows: 4, maxRows: 6 }}
+            onChange={handleInputChange}
           />
         </div>
       </Modal>

@@ -1,7 +1,6 @@
 import React from "react";
 import { useActiveUser } from "../../hooks/user/useActiveUser";
 import { message } from "antd";
-import { updateStatusRoomApi } from "../../apis/room/updateStatusRoomApi";
 
 const SwitchCustom = ({ userStatus, userName, statusRoom }) => {
   console.log("statusRoom : ", statusRoom);
